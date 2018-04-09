@@ -9,8 +9,6 @@ namespace AirTrafficMonitor.Classes
         private int _coordinateXOld;
         private int _coordinateYOld;
 
-        //public FlightTrack(string tag, int xCor, int yCor, uint altitude, DateTime timestamp)
-
         public FlightTrack(string transpoderData)
         {
             ExtractTranponderData(transpoderData);
