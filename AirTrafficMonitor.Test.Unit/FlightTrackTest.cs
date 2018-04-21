@@ -17,7 +17,7 @@ namespace AirTrafficMonitor.Test.Unit
         public void Extract_CanExtract(string expected)
         {
             var uut = new FlightTrack();
-            var airspace = new AirspaceMonitor(10000, 10000, 90000, 90000, 500, 20000);
+            var airspace = new AirspaceMonitor(10000, 10000, 90000, 90000, 500, 20000, new TrackCalculator());
             var tos = new TransponderObjectification(TransponderReceiverFactory.CreateTransponderDataReceiver(), airspace);
             tos.ObjectifyTransponderData(expected,uut);
 

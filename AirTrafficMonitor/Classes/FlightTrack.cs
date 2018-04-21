@@ -15,6 +15,13 @@ namespace AirTrafficMonitor.Classes
 
         public FlightTrack()
         {
+            Tag = "xxxxxx";
+            CoordinateX = 0;
+            CoordinateY = 0;
+            Altitude = 0;
+            Velocity = 0;
+            Course = 0;
+
             SeparationTrackList = new List<ITrack>();
             IsSeparationTrackListChanged = false;
         }

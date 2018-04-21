@@ -15,12 +15,13 @@ namespace AirTrafficMonitor.Classes
         private readonly int _north, _east, _south, _west;
         private readonly int _minAltitude, _maxAltitude;
         private readonly ISeparationMonitor _separationMonitor;
+        private readonly ITrackCalculator _trackCalculator;
 
         public Dictionary<string, ITrack> TrackDict { get; }
 
         public bool IsDoneDetectSpearation { get; private set; }
 
-        public AirspaceMonitor(int south, int west, int north, int east, int minAltitude, int maxAltitude)
+        public AirspaceMonitor(int south, int west, int north, int east, int minAltitude, int maxAltitude, ITrackCalculator trackCalculator)
         {
             if (north <= south || east <= west)
                 throw new Exception("Wrong coordinates for airspace. Rule: north <= south || east <= west");
@@ -40,10 +41,12 @@ namespace AirTrafficMonitor.Classes
 
             TrackDict = new Dictionary<string, ITrack>();
 
-            _separationMonitor = new SeparationMonitor();
+            _trackCalculator = trackCalculator;
+
+            _separationMonitor = new SeparationMonitor(_trackCalculator);
             _separationMonitor.SeparationEvent += SeparationMonitorOnSeparationEvent;
             _separationMonitor.SeparationDoneEvent += SeparationMonitorOnSeparationDoneEvent;
-
+            
             IsDoneDetectSpearation = true;
         }
 
@@ -97,7 +100,7 @@ namespace AirTrafficMonitor.Classes
                 double timeDiffSec = track.UpdateTimestamp.Subtract(trackExisting.Value.UpdateTimestamp).TotalSeconds;
                 double distanceTraveledMeters = Math.Sqrt(Math.Pow((trackExisting.Value.CoordinateX - track.CoordinateX), 2) + Math.Pow((trackExisting.Value.CoordinateY - track.CoordinateY), 2));
 
-                trackExisting.Value.Course = CalucalateCourse(trackExisting.Value, track);
+                trackExisting.Value.Course = _trackCalculator.CalucalateCourse(track, trackExisting.Value);
 
                 trackExisting.Value.CoordinateX = track.CoordinateX;
                 trackExisting.Value.CoordinateY = track.CoordinateY;
@@ -123,48 +126,6 @@ namespace AirTrafficMonitor.Classes
                 if (trackExisting.Value.Tag == track.Tag) return true;
 
             return false;
-        }
-
-        private double CalucalateCourse(ITrack trackExisting, ITrack trackNew)
-        {
-            int coordinateXDelta = trackNew.CoordinateX - trackExisting.CoordinateX;
-            int coordinateYDelta = trackNew.CoordinateY - trackExisting.CoordinateY;
-
-            // X = 0 , Y = positive
-            if (coordinateXDelta == 0 && coordinateYDelta > 0) return 0; // Straight North
-
-            // X = positive , Y = 0
-            if (coordinateXDelta > 0 && coordinateYDelta == 0) return 90; // Straight East
-
-            // X = 0 , Y = negative
-            if (coordinateXDelta == 0 && coordinateYDelta < 0) return 180; // Straight South
-
-            // X = negative , Y = 0
-            if (coordinateXDelta < 0 && coordinateYDelta == 0) return 270; // Straight West
-
-            // Y = negative , X = positive
-            if (coordinateYDelta < 0 && coordinateXDelta > 0)
-                return CourseFormula(coordinateXDelta, coordinateYDelta, 90);
-
-            // X = neg , Y = neg
-            if (coordinateXDelta < 0 && coordinateYDelta < 0)
-                return CourseFormula(coordinateXDelta, coordinateYDelta, 180);
-
-            // X = neg , Y = pos
-            if (coordinateXDelta < 0 && coordinateYDelta > 0)
-                return CourseFormula(coordinateXDelta, coordinateYDelta, 270);
-
-            // X = pos , Y = pos
-            return CourseFormula(coordinateXDelta, coordinateYDelta, 0);
-        }
-
-        private static double CourseFormula(int coordinateXDelta, int coordinateYDelta, int quadrantDegrees)
-        {
-            var x = Math.Abs(coordinateXDelta);
-            var y = Math.Abs(coordinateYDelta);
-            var dist = Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2));
-
-            return Math.Acos((1.0 / 2.0) * (Math.Pow(y, 2) - Math.Pow(x, 2) + Math.Pow(dist, 2)) / (y * dist)) * (180 / Math.PI) + quadrantDegrees;
         }
     }
 }

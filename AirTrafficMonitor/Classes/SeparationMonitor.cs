@@ -13,12 +13,15 @@ namespace AirTrafficMonitor.Classes
         public event EventHandler<SeparationEventArgs> SeparationEvent;
         public event EventHandler<SeparationEventArgs> SeparationDoneEvent;
 
-        private readonly int _maxHorizontalDistance, _maxVerticalDistance;
+        private readonly int _minHorizontalDistance, _minVerticalDistance;
+        private readonly ITrackCalculator _trackCalculator;
 
-        public SeparationMonitor()
+        public SeparationMonitor(ITrackCalculator trackCalculator)
         {
-            _maxHorizontalDistance = 5000;
-            _maxVerticalDistance = 300;
+            _minHorizontalDistance = 5000;
+            _minVerticalDistance = 300;
+
+            _trackCalculator = trackCalculator;
         }
 
         public void DetectSpearation(Dictionary<string, ITrack> trackDict)
@@ -31,31 +34,15 @@ namespace AirTrafficMonitor.Classes
                 {
                     if (track1.Key == track2.Key) continue;
 
-                    int verticalDistance = CalculateVerticalDistance(track1.Value, track2.Value);
-                    double horizontalDistance = CalculateHorizontalDistance(track1.Value, track2.Value);
+                    int verticalDistance = _trackCalculator.CalculateVerticalDistance(track1.Value, track2.Value);
+                    double horizontalDistance = _trackCalculator.CalculateHorizontalDistance(track1.Value, track2.Value);
 
-                    if (verticalDistance < _maxVerticalDistance && horizontalDistance < _maxHorizontalDistance)
+                    if (verticalDistance <= _minVerticalDistance && horizontalDistance <= _minHorizontalDistance)
                         SeparationEvent?.Invoke(this, new SeparationEventArgs(track1.Value, track2.Value));
                     else
                         SeparationDoneEvent?.Invoke(this, new SeparationEventArgs(track1.Value, track2.Value));
                 }
             }
-        }
-
-        private static double CalculateHorizontalDistance(ITrack track1, ITrack track2)
-        {
-            int coordinateXDelta = track1.CoordinateX - track2.CoordinateX;
-            int coordinateYDelta = track1.CoordinateY - track2.CoordinateY;
-
-            var x = Math.Abs(coordinateXDelta);
-            var y = Math.Abs(coordinateYDelta);
-
-            return Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2));
-        }
-
-        private static int CalculateVerticalDistance(ITrack track1, ITrack track2)
-        {
-            return Math.Abs(track1.Altitude - track2.Altitude);
         }
     }
 }
