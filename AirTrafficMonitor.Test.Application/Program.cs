@@ -12,8 +12,15 @@ namespace AirTrafficMonitor.Test.Application
     {
         static void Main(string[] args)
         {
-            var tos = new TransponderObjectification(TransponderReceiverFactory.CreateTransponderDataReceiver());
-            while (true) { }
+            var airspace = new AirspaceMonitor(10000, 10000, 90000, 90000, 500, 20000);
+
+            var tos = new TransponderObjectification(TransponderReceiverFactory.CreateTransponderDataReceiver(), airspace);
+
+            var log = new LogfileOutput();
+
+            Console.ReadKey();
         }
     }
+
+
 }

@@ -1,29 +1,56 @@
-﻿using AirTrafficMonitor.Interfaces;
+﻿using System;
+using AirTrafficMonitor.Interfaces;
 using TransponderReceiver;
 
 namespace AirTrafficMonitor.Classes
 {
-    public class TransponderObjectification
+    public class TransponderObjectification : ITransponderObjectification
     {
-        public ITransponderReceiver Receiver { get; private set; }
-        public IMonitor AirspaceMonitor { get; private set; } = new AirspaceMonitor(10000,10000,90000,90000,500,20000);
-        public IOutput Output { get; set; } = new ConsoleOutput();
+        private readonly IAirspaceMonitor _airspaceMonitor;
+        public ITransponderReceiver TransponderReceiver { get; }
+        public IOutput ConsoleOutput { get; set; }
+        public IOutput LogfileOutput { get; set; }
 
-        public TransponderObjectification(ITransponderReceiver receiver)
+        public TransponderObjectification(ITransponderReceiver transponderReceiver, IAirspaceMonitor airspaceMonitor)
         {
-            Receiver = receiver;
-            receiver.TransponderDataReady += ReceiverOnTransponderDataReady;
+            TransponderReceiver = transponderReceiver;
+            transponderReceiver.TransponderDataReady += ReceiverOnTransponderDataReady;
+
+            _airspaceMonitor = airspaceMonitor;
+
+            ConsoleOutput = new ConsoleOutput();
+            LogfileOutput = new LogfileOutput();
         }
 
-        private void ReceiverOnTransponderDataReady(object sender, RawTransponderDataEventArgs rawTransponderDataEventArgs)
+        public void ReceiverOnTransponderDataReady(object sender, RawTransponderDataEventArgs e)
         {
-            foreach (var data in rawTransponderDataEventArgs.TransponderData)
+            foreach (var data in e.TransponderData)
             {
-                AirspaceMonitor.AddTrack(data);
+                var track = new FlightTrack();
+                ObjectifyTransponderData(data, track);
+
+                // Block event until DetectSeparation is done
+                while (!_airspaceMonitor.IsDoneDetectSpearation) { }
+
+                _airspaceMonitor.AddTrack(track);
             }
 
-            Output.OutputTracks(AirspaceMonitor.TrackList);
+            ConsoleOutput.OutputDictionary(_airspaceMonitor.TrackDict);
+            LogfileOutput.OutputDictionary(_airspaceMonitor.TrackDict);
+            LogfileOutput.OutputSeparationEvents(_airspaceMonitor.TrackDict);
         }
-    
+
+        public void ObjectifyTransponderData(string transponderData, ITrack track)
+        {
+            var split = transponderData.Split(';');
+
+            track.Tag = split[0];
+            track.CoordinateX = int.Parse(split[1]);
+            track.CoordinateY = int.Parse(split[2]);
+            track.Altitude = int.Parse(split[3]);
+            track.UpdateTimestamp = DateTime.ParseExact(split[4], "yyyyMMddHHmmssfff", null);
+            track.Velocity = 0;
+            track.Course = 0;
+        }
     }
 }

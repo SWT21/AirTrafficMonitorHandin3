@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using AirTrafficMonitor.Interfaces;
 
 namespace AirTrafficMonitor.Classes
@@ -6,143 +7,69 @@ namespace AirTrafficMonitor.Classes
     public class FlightTrack : ITrack
     {
         private string _tag;
-        private int _coordinateXOld;
-        private int _coordinateYOld;
+        private int _coordinateX;
+        private int _coordinateY;
+        private int _altitude;
+        private double _course;
+        private double _velocity;
 
-        public FlightTrack(string transpoderData)
+        public FlightTrack()
         {
-            ExtractTranponderData(transpoderData);
-        }
-
-        public void ExtractTranponderData(string transponderData)
-        {
-            var split = transponderData.Split(';');
-
-            Tag = split[0];
-            CoordinateX = Int32.Parse(split[1]);
-            CoordinateY = Int32.Parse(split[2]);
-            Altitude = Int32.Parse(split[3]);
-            Timestamp = DateTime.ParseExact(split[4], "yyyyMMddHHmmssfff", null);
-            Velocity = 0;
-            Course = 0;
-
+            SeparationTrackList = new List<ITrack>();
+            IsSeparationTrackListChanged = false;
         }
 
         public string Tag
         {
             get => _tag;
-            private set
-            {
-                if (value.Length <= 6)
-                {
-                    _tag = value;
-                }
-                else
-                {
-                    throw new Exception("Tag value must be at least 6 characters");
-                }
-                
-            }
+            set => _tag = value.Length <= 6 
+                ? value 
+                : throw new Exception("Tag value must be at least 6 characters");
         }
 
-        public int CoordinateX { get; private set; }
-        public int CoordinateY { get; private set; }
-        public int Altitude { get; private set; }
-        public double Velocity { get; private set; }
-        public DateTime Timestamp { get; private set; }
-        public double Course { get; private set; }
-
-        public void RefreshTrack(ITrack track)
+        public int CoordinateX
         {
-            if (track.Tag != _tag)
-            {
-                throw new Exception("The track tag doenst match the tag of this object.");
-            }
-
-            _coordinateXOld = CoordinateX;
-            _coordinateYOld = CoordinateY;
-
-            CoordinateX = track.CoordinateX;
-            CoordinateY = track.CoordinateY;
-            
-            double timeDiffSec = track.Timestamp.Subtract(Timestamp).TotalSeconds;
-            double distanceTraveledMeters = Math.Sqrt(Math.Pow((_coordinateXOld - CoordinateX), 2) + Math.Pow((_coordinateYOld - CoordinateY), 2));
-
-            Velocity = distanceTraveledMeters / timeDiffSec;
-            Course = CalucalateCourse(CoordinateX, CoordinateY);
-
-            Altitude = track.Altitude;
-
+            get => _coordinateX;
+            set => _coordinateX = value >= 0
+                ? value
+                : throw new Exception("X coordiante must be 0 or greater");
         }
-        private double CalucalateCourse(int coordinateX, int coordinateY)
+
+        public int CoordinateY
         {
-            int coordinateXDiff = coordinateX - _coordinateXOld;
-            int coordinateYDiff = coordinateX - _coordinateXOld;
+            get => _coordinateY;
+            set => _coordinateY = value >= 0
+                ? value
+                : throw new Exception("Y coordiante must be 0 or greater");
+        }
 
-            // X = neg , Y = pos
-            if (coordinateXDiff < 0 && coordinateYDiff > 0) 
-            {
-                var a = Math.Abs(coordinateYDiff);
-                var b = Math.Abs(coordinateXDiff);
-                var c = Math.Sqrt(Math.Pow(a, 2) + Math.Pow(b, 2));
+        public int Altitude
+        {
+            get => _altitude;
+            set => _altitude = value >= 0
+                ? value
+                : throw new Exception("Altitude must be 0 or greater");
+        }
 
-                return Math.Acos((1.0 / 2.0) * (Math.Pow(a, 2) - Math.Pow(b, 2) + Math.Pow(c, 2)) / (a * c)) * (180 / Math.PI) + 270;
-            }
+        public double Velocity
+        {
+            get => _velocity;
+            set => _velocity = value >= 0
+                ? value
+                : throw new Exception("Velocity must be 0 or greater");
+        }
 
-            // Y = neg , X = pos
-            if (coordinateYDiff < 0 && coordinateXDiff > 0) 
-            {
-                var a = Math.Abs(coordinateYDiff);
-                var b = Math.Abs(coordinateXDiff);
-                var c = Math.Sqrt(Math.Pow(a, 2) + Math.Pow(b, 2));
-                
-                return Math.Acos((1.0 / 2.0) * (Math.Pow(a, 2) - Math.Pow(b, 2) + Math.Pow(c, 2)) / (a * c)) * (180 / Math.PI) + 90;
-            }
+        public double Course
+        {
+            get => _course;
+            set => _course = value <= 360 && 0 <= value
+                ? value
+                : throw new Exception("The course must be between 0 and 360 degrees");
+        }
 
-            // X = neg , Y = neg
-            if (coordinateXDiff < 0 && coordinateYDiff < 0) 
-            {
-                var a = Math.Abs(coordinateYDiff);
-                var b = Math.Abs(coordinateXDiff);
-                var c = Math.Sqrt(Math.Pow(a, 2) + Math.Pow(b, 2));
-
-                return Math.Acos((1.0 / 2.0) * (Math.Pow(a, 2) - Math.Pow(b, 2) + Math.Pow(c, 2)) / (a * c)) * (180 / Math.PI) + 180;
-            }
-
-            // X = pos , Y = 0
-            if (coordinateXDiff > 0 && coordinateYDiff == 0)
-            {
-                return 90; // Straight East
-            }
-
-            // X = neg , Y = 0
-            if (coordinateXDiff < 0 && coordinateYDiff == 0)
-            {
-                return 270; // Straight West
-            }
-
-            // X = 0 , Y = pos
-            if (coordinateXDiff == 0 && coordinateYDiff > 0)
-            {
-                return 0; // Straight North
-            }
-
-            // X = 0 , Y = neg
-            if (coordinateXDiff == 0 && coordinateYDiff < 0)
-            {
-                return 180; // Straight South
-            }
-
-            // X = pos , Y = pos
-            {
-                var a = Math.Abs(coordinateYDiff);
-                var b = Math.Abs(coordinateXDiff);
-                var c = Math.Sqrt(Math.Pow(a, 2) + Math.Pow(b, 2));
-
-                return Math.Acos((1.0 / 2.0) * (Math.Pow(a, 2) - Math.Pow(b, 2) + Math.Pow(c, 2)) / (a * c)) * (180 / Math.PI);
-            }
-
-
-        } 
+        public DateTime UpdateTimestamp { get; set; }
+        public DateTime SeparationTimestamp { get; set; }
+        public List<ITrack> SeparationTrackList { get; set; }
+        public bool IsSeparationTrackListChanged { get; set; }
     }
 }

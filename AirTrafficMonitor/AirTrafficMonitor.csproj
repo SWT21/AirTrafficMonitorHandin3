@@ -47,10 +47,14 @@
     <Compile Include="Classes\ConsoleOutput.cs" />
     <Compile Include="Classes\FlightTrack.cs" />
     <Compile Include="Classes\LogfileOutput.cs" />
+    <Compile Include="Classes\SeparationMonitor.cs" />
     <Compile Include="Classes\TransponderObjectification.cs" />
-    <Compile Include="Interfaces\IMonitor.cs" />
+    <Compile Include="Events\SeparationEventArgs.cs" />
+    <Compile Include="Interfaces\IAirspaceMonitor.cs" />
     <Compile Include="Interfaces\IOutput.cs" />
+    <Compile Include="Interfaces\ISeparationMonitor.cs" />
     <Compile Include="Interfaces\ITrack.cs" />
+    <Compile Include="Interfaces\ITransponderObjectification.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

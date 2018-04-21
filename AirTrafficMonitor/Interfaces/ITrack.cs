@@ -9,12 +9,15 @@ namespace AirTrafficMonitor.Interfaces
 {
     public interface ITrack
     {
-        string Tag { get; }
-        int CoordinateX { get; }
-        int CoordinateY { get; }
-        int Altitude { get; }
-        double Velocity { get; }
-        DateTime Timestamp { get; }
-        double Course { get; }
+        string Tag { get; set; }
+        int CoordinateX { get; set; }
+        int CoordinateY { get; set; }
+        int Altitude { get; set; }
+        double Velocity { get; set; }
+        double Course { get; set; }
+        DateTime UpdateTimestamp { get; set; }
+        DateTime SeparationTimestamp { get; set; }
+        List<ITrack> SeparationTrackList { get; set; }
+        bool IsSeparationTrackListChanged { get; set; }
     }
 }

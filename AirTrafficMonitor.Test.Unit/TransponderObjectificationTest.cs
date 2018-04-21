@@ -17,13 +17,14 @@ namespace AirTrafficMonitor.Test.Unit
     {
         private TransponderObjectification _uut;
         private ITransponderReceiver _transponderReceiver;
+        private IMonitor _monitor;
 
         [SetUp]
         public void Setup()
         {
             _transponderReceiver = Substitute.For<ITransponderReceiver>();
-            _uut = new TransponderObjectification(_transponderReceiver);
-            _uut.Output = Substitute.For<IOutput>();
+            _uut = new TransponderObjectification(_transponderReceiver, _monitor);
+            _uut.ConsoleOutput = Substitute.For<IOutput>();
         }
 
         [Test]
@@ -41,7 +42,8 @@ namespace AirTrafficMonitor.Test.Unit
             Assert.That(_uut.AirspaceMonitor.TrackList[0].Altitude, Is.EqualTo(track.Altitude));
             Assert.That(_uut.AirspaceMonitor.TrackList[0].CoordinateX, Is.EqualTo(track.CoordinateX));
             Assert.That(_uut.AirspaceMonitor.TrackList[0].CoordinateY, Is.EqualTo(track.CoordinateY));
-            Assert.That(_uut.AirspaceMonitor.TrackList[0].Timestamp, Is.EqualTo(track.Timestamp));
+            Assert.That(_uut.AirspaceMonitor.TrackList[0].Timestamp, Is.EqualTo(track.UpdateTimestamp));
         }
     }
+    
 }
