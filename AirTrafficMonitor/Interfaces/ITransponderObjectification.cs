@@ -11,5 +11,8 @@ namespace AirTrafficMonitor.Interfaces
     {
         ITransponderReceiver TransponderReceiver { get; }
         void ReceiverOnTransponderDataReady(object sender, RawTransponderDataEventArgs e);
+        void ObjectifyTransponderData(string transponderData, ITrack track);
+        IOutput ConsoleOutput { get; set; }
+        IOutput LogfileOutput { get; set; }
     }
 }

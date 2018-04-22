@@ -63,10 +63,9 @@
     <Compile Include="AirspaceMonitorUnitTest.cs" />
     <Compile Include="FlightTrackTestUnit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="FlightTrackTest.cs" />
     <Compile Include="SeparationMonitorTestUnit.cs" />
     <Compile Include="TrackCalculatorTestUnit.cs" />
-    <Compile Include="TransponderObjectificationTest.cs" />
+    <Compile Include="TransponderObjectificationTestUnit.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

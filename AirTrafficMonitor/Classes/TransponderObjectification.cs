@@ -14,7 +14,7 @@ namespace AirTrafficMonitor.Classes
         public TransponderObjectification(ITransponderReceiver transponderReceiver, IAirspaceMonitor airspaceMonitor)
         {
             TransponderReceiver = transponderReceiver;
-            transponderReceiver.TransponderDataReady += ReceiverOnTransponderDataReady;
+            TransponderReceiver.TransponderDataReady += ReceiverOnTransponderDataReady;
 
             _airspaceMonitor = airspaceMonitor;
 
