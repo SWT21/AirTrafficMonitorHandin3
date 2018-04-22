@@ -16,7 +16,6 @@ namespace AirTrafficMonitor.Test.Unit
     {
         private ISeparationMonitor _uut;
         private ITrackCalculator _trackCalculatorSubstitute;
-        private ITrack _flightTrack;
         private Dictionary<string, ITrack> _trackDict;
 
         [SetUp]
@@ -24,7 +23,6 @@ namespace AirTrafficMonitor.Test.Unit
         {
             _trackCalculatorSubstitute = Substitute.For<ITrackCalculator>();
             _uut = new SeparationMonitor(_trackCalculatorSubstitute);
-            _flightTrack = new FlightTrack();
             _trackDict = new Dictionary<string, ITrack>();
         }
 

@@ -9,6 +9,7 @@ using NUnit.Framework;
 
 namespace AirTrafficMonitor.Test.Unit
 {
+    [TestFixture]
     class TrackCalculatorTestUnit
     {
         private ITrackCalculator _uut;
