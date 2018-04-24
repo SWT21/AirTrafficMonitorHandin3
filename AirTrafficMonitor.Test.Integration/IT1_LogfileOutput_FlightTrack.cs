@@ -29,6 +29,7 @@ namespace AirTrafficMonitor.Test.Integration
             _flightTrack2 = new FlightTrack() { Tag = "2", Altitude = 700, CoordinateX = 12000, CoordinateY = 12000 };
         }
 
+        /*
         [Test]
         public void OutputSeparationEvents_IsSeparationTrackListChanged_SetToFalse()
         {
@@ -45,5 +46,6 @@ namespace AirTrafficMonitor.Test.Integration
 
             Assert.That(_flightTrack1.IsSeparationTrackListChanged, Is.EqualTo(false));
         }
+        */
     }
 }
