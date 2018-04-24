@@ -81,58 +81,56 @@ namespace AirTrafficMonitor.Classes
 
         public void OutputSeparationEvents(Dictionary<string, ITrack> trackDict)
         {
-            if (!File.Exists(_filepathSeparationLogfile))
+
+            if (File.Exists(_filepathSeparationLogfile))
             {
-                using (StreamWriter sw = File.CreateText(_filepathSeparationLogfile))
+                using (StreamWriter sw = File.AppendText(_filepathSeparationLogfile))
                 {
-                }
-            }
-
-            using (StreamWriter sw = File.AppendText(_filepathSeparationLogfile))
-            {
-                if (new FileInfo(_filepathSeparationLogfile).Length == 0)
-                {
-                    OutputTableSeparator(sw, TableWidthSeparationLogfile);
-                    OutputTableRow(sw, TableWidthSeparationLogfile, "Flight no.", "Separate with", "Separate date", "Separate time");
-                    OutputTableSeparator(sw, TableWidthSeparationLogfile);
-                }
-
-                foreach (var track in trackDict)
-                {
-                    if (track.Value.SeparationTrackList.Count == 0) continue;
-
-                    if (_separationEventList.Contains(track.Value))
-                        _separationEventList.Remove(track.Value);
-
-                    _separationEventList.Add(track.Value);
-                }
-
-                foreach (var separstionEvent in _separationEventList)
-                {
-                    if (separstionEvent.SeparationTrackList.Count == 0) continue;
-                    if (!separstionEvent.IsSeparationTrackListChanged) continue;
-
-                    string separationString = "";
-                    string separationTimestampDate = "";
-                    string separationTimestampTime = "";
-
-                    foreach (var separation in separstionEvent.SeparationTrackList)
+                    if (new FileInfo(_filepathSeparationLogfile).Length == 0)
                     {
-                        separationString += separation.Tag + ",";
-                        separationTimestampDate = separation.SeparationTimestamp.Date.ToString("dd/MM/yyyy");
-                        separationTimestampTime = separation.SeparationTimestamp.ToString("HH:mm:ss");
+                        OutputTableSeparator(sw, TableWidthSeparationLogfile);
+                        OutputTableRow(sw, TableWidthSeparationLogfile, "Flight no.", "Separate with", "Separate date",
+                            "Separate time");
+                        OutputTableSeparator(sw, TableWidthSeparationLogfile);
                     }
 
-                    OutputTableRow(
-                        sw,
-                        TableWidthSeparationLogfile,
-                        separstionEvent.Tag,
-                        separationString,
-                        separationTimestampDate,
-                        separationTimestampTime
-                    );
-                        
-                    separstionEvent.IsSeparationTrackListChanged = false;
+                    foreach (var track in trackDict)
+                    {
+                        if (track.Value.SeparationTrackList.Count == 0) continue;
+
+                        if (_separationEventList.Contains(track.Value))
+                            _separationEventList.Remove(track.Value);
+
+                        _separationEventList.Add(track.Value);
+                    }
+
+                    foreach (var separstionEvent in _separationEventList)
+                    {
+                        if (separstionEvent.SeparationTrackList.Count == 0) continue;
+                        if (!separstionEvent.IsSeparationTrackListChanged) continue;
+
+                        string separationString = "";
+                        string separationTimestampDate = "";
+                        string separationTimestampTime = "";
+
+                        foreach (var separation in separstionEvent.SeparationTrackList)
+                        {
+                            separationString += separation.Tag + ",";
+                            separationTimestampDate = separation.SeparationTimestamp.Date.ToString("dd/MM/yyyy");
+                            separationTimestampTime = separation.SeparationTimestamp.ToString("HH:mm:ss");
+                        }
+
+                        OutputTableRow(
+                            sw,
+                            TableWidthSeparationLogfile,
+                            separstionEvent.Tag,
+                            separationString,
+                            separationTimestampDate,
+                            separationTimestampTime
+                        );
+
+                        separstionEvent.IsSeparationTrackListChanged = false;
+                    }
                 }
             }
         }
