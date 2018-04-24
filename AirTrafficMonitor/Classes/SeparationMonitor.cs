@@ -18,8 +18,8 @@ namespace AirTrafficMonitor.Classes
 
         public SeparationMonitor(ITrackCalculator trackCalculator)
         {
-            _minHorizontalDistance = 15000;
-            _minVerticalDistance = 1300;
+            _minHorizontalDistance = 5000;
+            _minVerticalDistance = 300;
 
             _trackCalculator = trackCalculator;
         }
