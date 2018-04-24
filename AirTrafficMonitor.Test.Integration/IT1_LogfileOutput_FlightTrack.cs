@@ -16,8 +16,8 @@ namespace AirTrafficMonitor.Test.Integration
     class IT1_LogfileOutput_FlightTrack
     {
         private IOutput _logfileOutput;
-        private ITrack _flighTrack1;
-        private ITrack _flighTrack2;
+        private ITrack _flightTrack1;
+        private ITrack _flightTrack2;
         private IAirspaceMonitor _airspaceMonitor;
 
         [SetUp]
@@ -25,25 +25,25 @@ namespace AirTrafficMonitor.Test.Integration
         {
             _airspaceMonitor = new AirspaceMonitor(10000, 10000, 90000, 90000, 500, 20000, new TrackCalculator());
             _logfileOutput = new LogfileOutput();
-            _flighTrack1 = new FlightTrack() { Tag = "1" };
-            _flighTrack2 = new FlightTrack() { Tag = "2" };
+            _flightTrack1 = new FlightTrack() { Tag = "1", Altitude = 500, CoordinateX = 10000, CoordinateY = 10000 };
+            _flightTrack2 = new FlightTrack() { Tag = "2", Altitude = 700, CoordinateX = 12000, CoordinateY = 12000 };
         }
 
         [Test]
         public void OutputSeparationEvents_IsSeparationTrackListChanged_SetToFalse()
         {
-            _airspaceMonitor.TrackDict.Add(_flighTrack1.Tag, _flighTrack1);
-            _airspaceMonitor.TrackDict.Add(_flighTrack2.Tag, _flighTrack2);
+            _airspaceMonitor.TrackDict.Add(_flightTrack1.Tag, _flightTrack1);
+            _airspaceMonitor.TrackDict.Add(_flightTrack2.Tag, _flightTrack2);
 
-            _flighTrack1.SeparationTrackList.Add(_flighTrack2);
-            _flighTrack2.SeparationTrackList.Add(_flighTrack1);
+            _flightTrack1.SeparationTrackList.Add(_flightTrack2);
+            _flightTrack2.SeparationTrackList.Add(_flightTrack1);
             
-            _flighTrack1.IsSeparationTrackListChanged = true;
-            _flighTrack2.IsSeparationTrackListChanged = true;
+            _flightTrack1.IsSeparationTrackListChanged = true;
+            _flightTrack2.IsSeparationTrackListChanged = true;
             
             _logfileOutput.OutputSeparationEvents(_airspaceMonitor.TrackDict);
 
-            Assert.That(_flighTrack1.IsSeparationTrackListChanged, Is.EqualTo(false));
+            Assert.That(_flightTrack1.IsSeparationTrackListChanged, Is.EqualTo(false));
         }
     }
 }
