@@ -54,10 +54,18 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="TransponderReceiver, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\TransponderReceiver.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
-    <Compile Include="IT1_TrackCalculator_AirspaceMonitor_SeparationMonitor.cs" />
+    <Compile Include="IT1_LogfileOutput_FlightTrack.cs" />
+    <Compile Include="IT2_TransponderObjectification_ConsoleOutput_LogfileOutput.cs" />
+    <Compile Include="IT3_SeparationMonitor_TrackCalculator.cs" />
+    <Compile Include="IT4_AirspaceMonitor_TrackCalculator.cs" />
+    <Compile Include="IT5_AirspaceMonitor_SeparationMonitor.cs" />
+    <Compile Include="IT6_TransponderObjectification_AirspaceMonitor_FlightTrack.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

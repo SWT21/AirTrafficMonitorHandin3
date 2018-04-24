@@ -18,8 +18,8 @@ namespace AirTrafficMonitor.Classes
 
         public SeparationMonitor(ITrackCalculator trackCalculator)
         {
-            _minHorizontalDistance = 5000;
-            _minVerticalDistance = 300;
+            _minHorizontalDistance = 15000;
+            _minVerticalDistance = 1300;
 
             _trackCalculator = trackCalculator;
         }
@@ -34,15 +34,18 @@ namespace AirTrafficMonitor.Classes
                 {
                     if (track1.Key == track2.Key) continue;
 
-                    int verticalDistance = _trackCalculator.CalculateVerticalDistance(track1.Value, track2.Value);
-                    double horizontalDistance = _trackCalculator.CalculateHorizontalDistance(track1.Value, track2.Value);
+                    VerticalDistance = _trackCalculator.CalculateVerticalDistance(track1.Value, track2.Value);
+                    HorizontalDistance = _trackCalculator.CalculateHorizontalDistance(track1.Value, track2.Value);
 
-                    if (verticalDistance <= _minVerticalDistance && horizontalDistance <= _minHorizontalDistance)
+                    if (VerticalDistance <= _minVerticalDistance && HorizontalDistance <= _minHorizontalDistance)
                         SeparationEvent?.Invoke(this, new SeparationEventArgs(track1.Value, track2.Value));
                     else
                         SeparationDoneEvent?.Invoke(this, new SeparationEventArgs(track1.Value, track2.Value));
                 }
             }
         }
+
+        public int VerticalDistance { get; private set; }
+        public double HorizontalDistance { get; private set; }
     }
 }

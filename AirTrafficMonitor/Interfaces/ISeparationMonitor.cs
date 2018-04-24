@@ -12,5 +12,7 @@ namespace AirTrafficMonitor.Interfaces
         event EventHandler<SeparationEventArgs> SeparationEvent;
         event EventHandler<SeparationEventArgs> SeparationDoneEvent;
         void DetectSpearation(Dictionary<string, ITrack> trackDict);
+        int VerticalDistance { get; }
+        double HorizontalDistance { get; }
     }
 }

@@ -14,9 +14,9 @@ namespace AirTrafficMonitor.Classes
     {
         private readonly int _north, _east, _south, _west;
         private readonly int _minAltitude, _maxAltitude;
-        private readonly ISeparationMonitor _separationMonitor;
         private readonly ITrackCalculator _trackCalculator;
 
+        public ISeparationMonitor SeparationMonitor { get; private set; }
         public Dictionary<string, ITrack> TrackDict { get; }
 
         public bool IsDoneDetectSpearation { get; private set; }
@@ -43,9 +43,9 @@ namespace AirTrafficMonitor.Classes
 
             _trackCalculator = trackCalculator;
 
-            _separationMonitor = new SeparationMonitor(_trackCalculator);
-            _separationMonitor.SeparationEvent += SeparationMonitorOnSeparationEvent;
-            _separationMonitor.SeparationDoneEvent += SeparationMonitorOnSeparationDoneEvent;
+            SeparationMonitor = new SeparationMonitor(_trackCalculator);
+            SeparationMonitor.SeparationEvent += SeparationMonitorOnSeparationEvent;
+            SeparationMonitor.SeparationDoneEvent += SeparationMonitorOnSeparationDoneEvent;
             
             IsDoneDetectSpearation = true;
         }
@@ -86,7 +86,7 @@ namespace AirTrafficMonitor.Classes
                 else
                     RefreshTrack(trackNew);
 
-                _separationMonitor.DetectSpearation(TrackDict);
+                SeparationMonitor.DetectSpearation(TrackDict);
                 IsDoneDetectSpearation = true;
             }
         }
@@ -100,7 +100,8 @@ namespace AirTrafficMonitor.Classes
                 double timeDiffSec = track.UpdateTimestamp.Subtract(trackExisting.Value.UpdateTimestamp).TotalSeconds;
                 double distanceTraveledMeters = Math.Sqrt(Math.Pow((trackExisting.Value.CoordinateX - track.CoordinateX), 2) + Math.Pow((trackExisting.Value.CoordinateY - track.CoordinateY), 2));
 
-                trackExisting.Value.Course = _trackCalculator.CalucalateCourse(track, trackExisting.Value);
+                TrackCourse = _trackCalculator.CalucalateCourse(track, trackExisting.Value);
+                trackExisting.Value.Course = TrackCourse;
 
                 trackExisting.Value.CoordinateX = track.CoordinateX;
                 trackExisting.Value.CoordinateY = track.CoordinateY;
@@ -127,5 +128,7 @@ namespace AirTrafficMonitor.Classes
 
             return false;
         }
+
+        public double TrackCourse { get; private set; }
     }
 }
