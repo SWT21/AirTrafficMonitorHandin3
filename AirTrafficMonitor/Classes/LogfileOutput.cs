@@ -81,6 +81,13 @@ namespace AirTrafficMonitor.Classes
 
         public void OutputSeparationEvents(Dictionary<string, ITrack> trackDict)
         {
+            if (!File.Exists(_filepathSeparationLogfile))
+            {
+                using (StreamWriter sw = File.CreateText(_filepathSeparationLogfile))
+                {
+                }
+            }
+
             using (StreamWriter sw = File.AppendText(_filepathSeparationLogfile))
             {
                 if (new FileInfo(_filepathSeparationLogfile).Length == 0)
