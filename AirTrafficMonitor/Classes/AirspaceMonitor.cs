@@ -16,7 +16,7 @@ namespace AirTrafficMonitor.Classes
         private readonly int _minAltitude, _maxAltitude;
         private readonly ITrackCalculator _trackCalculator;
 
-        public ISeparationMonitor SeparationMonitor { get; private set; }
+        public ISeparationMonitor SeparationMonitor { get; }
         public Dictionary<string, ITrack> TrackDict { get; }
 
         public bool IsDoneDetectSpearation { get; private set; }
